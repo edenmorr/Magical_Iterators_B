@@ -168,9 +168,9 @@ namespace ariel
 
         private:
             MagicalContainer &container;
-            std::vector<size_t> iter;
+            std::vector<int> iter;
             unsigned long int index1;
-            int counter = 0;
+            int counter;
 
         public:
             unsigned long int getindex()
@@ -179,17 +179,17 @@ namespace ariel
             }
             // Default constructor
             SideCrossIterator( MagicalContainer &cont, bool revers = false) 
-                : container(cont), index1(0) {}
+                : container(cont), index1(0), iter(container.elements), counter(0) {}
             // Copy constructor
             SideCrossIterator(const SideCrossIterator &other)
-                : container(other.container), iter(other.iter), index1(other.index1) {}
+                : container(other.container), iter(other.iter), index1(other.index1), counter(other.counter) {}
     
             // Destructor
             ~SideCrossIterator(){};
 
             // Move constructor
             SideCrossIterator(SideCrossIterator&& other) noexcept
-                : container(other.container), iter(other.iter), index1(other.index1) {}
+                : container(other.container), iter(other.iter), index1(other.index1), counter(other.counter) {}
 
             // Move assignment operator
             SideCrossIterator& operator=(SideCrossIterator&& other) 
@@ -201,6 +201,7 @@ namespace ariel
             {
             iter = other.iter;
             index1 = other.index1;
+            counter= other.counter;
             }
                 return *this;
             }
@@ -215,6 +216,7 @@ namespace ariel
             this->container = other.container;
             iter = other.iter;
             index1 = other.index1;
+            counter = other.counter;
             }
                 return *this;
             }
@@ -243,12 +245,20 @@ namespace ariel
             SideCrossIterator &operator++(){ 
                 if(index1 < (this)->end().index1){
                 ++index1;
-                if(this->counter < (this->container.elements.size()/2))
-                {   
-                    // cout << "counter =" << counter << endl; 
-                    swap(this->container.elements,this->index1);
-                    this->counter++;
+                if (index1 % 2 != 0)
+                {
+                    this->counter = iter.size() - (index1 / 2) - 1;
                 }
+                else
+                {
+                    this->counter = index1 / 2;
+                }
+                // if(this->counter < (iter.size()/2))
+                // {   
+                //     // cout << "counter =" << counter << endl; 
+                //     swap(iter,this->index1);
+                //     this->counter++;
+                // }
                 return *this;
             }
             else{
@@ -267,7 +277,7 @@ namespace ariel
 
             int operator*() {
             
-                return this->container.elements[this->index1];
+                return this->iter[(size_t)this->counter];
             }
 
             SideCrossIterator begin(){
@@ -279,7 +289,7 @@ namespace ariel
             SideCrossIterator end()
             {
             SideCrossIterator iterat(container);
-            iterat.index1 = container.elements.size();
+            iterat.index1 = iter.size();
                 return iterat;
             }
             };
@@ -375,31 +385,21 @@ namespace ariel
 
             // Pre-increment operator (operator++)
             PrimeIterator &operator++(){
-            if(*this == this->end()){
+            if(index == container.prime.size()){
                 throw std::runtime_error(" no more prime elements");
             }
             // if(container.size()==0){
             //     this = nullptr;
             // }
-            
-            if((this)->temp+1 == container.prime.size()){
-                index = end().index;
-                return *this;
-            }        
-            if((this)->temp < container.prime.size()){
-                (this)->temp++;
-                (this)->index = container.prime[(this)->temp];
-                return (*this);
-            }
-            else{
-                throw std::runtime_error("blabla");
-            }
+                 
+            (this)->index++;
+            return (*this);
 
             }
 
             // Dereference operator (operator*)
             int operator*() {
-                int temp = (this)->container.prime[this->temp];
+                int temp = (this)->container.prime[this->index];
                 return temp;
             }
 
@@ -416,9 +416,9 @@ namespace ariel
             
         PrimeIterator end(){
         PrimeIterator iterator(container);
-        iterator.index = iterator.container.prime.size()+1;
+        iterator.index = iterator.container.prime.size();
         return iterator;
         }
-        };
+        }; ///////////////////////////
     };
 } 

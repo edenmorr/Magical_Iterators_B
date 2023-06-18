@@ -123,11 +123,13 @@ TEST_CASE("PrimeIterator") {
 
     SUBCASE("Iterating over an empty container") {
         MagicalContainer emptyContainer;
-        MagicalContainer::PrimeIterator it(emptyContainer);
+        MagicalContainer::PrimeIterator it(emptyContainer); ///////////////////// STILL NOT WORKING ! ! ! 
+        // std::cout << "this one" <<std::endl;
+        // it = it.end();
         CHECK(it == it.end());
     }
 }
-//--------------------------------------------------------------
+// --------------------------------------------------------------
 // Test case for comparing iterators from the same container
 TEST_CASE("Comparing iterators from the same container") {
     MagicalContainer container;
@@ -196,7 +198,7 @@ TEST_CASE("Traversing PrimeIterator") {
     container.addElement(4);
     container.addElement(5);
     container.addElement(14);
-
+    
     SUBCASE("Iterating over prime elements") {
         MagicalContainer::PrimeIterator it(container);
         CHECK(*it == 2);
@@ -216,6 +218,11 @@ TEST_CASE("SideCrossIterator") {
     container.addElement(5);
     container.addElement(14);
 
+    MagicalContainer::SideCrossIterator crossIter(container);
+    for (auto it = crossIter.begin(); it != crossIter.end(); ++it) {
+        std::cout << *it << ' ';
+    }
+
     SUBCASE("Iterating in side-cross order from start to end") {
         MagicalContainer::SideCrossIterator it(container);
 
@@ -232,7 +239,6 @@ TEST_CASE("SideCrossIterator") {
         CHECK(it == it.end());
     }
 }
-//-------------------------------------------------------
 // Test case for comparing AscendingIterator
 TEST_CASE("Comparing AscendingIterator") {
     MagicalContainer container;
@@ -591,7 +597,6 @@ TEST_CASE("operator= throws when iterators are pointing at different containers"
    {
         MagicalContainer::PrimeIterator it1(container1);
         MagicalContainer::PrimeIterator it2(container2);
-
         CHECK_THROWS_AS(it1 = it2, std::runtime_error);
    }
 }
